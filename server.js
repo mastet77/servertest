@@ -1,24 +1,12 @@
-const http = require("http");
+const express = require("express");
 
+const app = express();
 const port = process.env.PORT || 3000;
 
-http.createServer((req, res) => {
-    // говорим браузеру, что будет HTML
-    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+app.get("/", (req, res) => {
+  res.send("<h1>Hello from Maxim</h1>");
+});
 
-    // HTML с стилями
-    res.end(`
-    <div style="
-      font-weight: bold;       /* жирный */
-      font-size: 3em;          /* примерно в 3 раза больше обычного */
-      color: white;            /* белый цвет */
-      background-color: black; /* фон, чтобы белый был виден */
-      text-align: center;      /* по центру */
-      margin-top: 20%;
-    ">
-      Hello, world!
-    </div>
-  `);
-}).listen(port, () => {
-    console.log("Server running on port " + port);
+app.listen(port, () => {
+  console.log("Server running on " + port);
 });
