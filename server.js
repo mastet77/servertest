@@ -6,17 +6,14 @@ const app = express();
 
 app.use(express.json());
 
+const tournamentsRoutes = require("./routes/tournaments");
+const matchesRoutes = require("./routes/matches");
 const teamsRoutes = require("./routes/teams");
 
-const PORT = process.env.PORT || 3000;
-
-app.get("/", (req, res) => {
-  res.send("Hello from Maxim!");
-});
-
-// Routes
+app.use("/api/tournaments", tournamentsRoutes);
 app.use("/api/teams", teamsRoutes);
+app.use("/api/matches", matchesRoutes);
 
-app.listen(PORT, () => {
-  console.log("Server started on port " + PORT);
+app.listen(3000, () => {
+  console.log("Server started on port 3000");
 });

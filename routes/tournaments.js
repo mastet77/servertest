@@ -3,10 +3,10 @@ const express = require("express");
 const router = express.Router();
 
 // временная БД
-const teams = [
-    { id: 11, name: "Team A" },
-    { id: 22, name: "Team B" },
-    { id: 33, name: "Team C" }
+const tournaments = [
+    { id: 11, name: "Tournament A" },
+    { id: 22, name: "Tournament B" },
+    { id: 33, name: "Tournament C" }
 ];
 
 router.post("/", (req, res) => {
@@ -15,29 +15,29 @@ router.post("/", (req, res) => {
         return res.status(400).json({ error: "name is required" });
     }
 
-    const team = {
+    const tournament = {
         id: Date.now(),
         name: req.body.name
     };
 
-    teams.push(team);
-    res.json(team);
+    tournaments.push(tournament);
+    res.json(tournament);
 });
 
 router.get("/:id", (req, res) => {
 
     const id = Number(req.params.id);
-    const team = teams.find(t => t.id === id);
+    const tournament = tournaments.find(t => t.id === id);
 
-    if (!team) {
+    if (!tournament) {
         return res.status(404).json({ error: "Not Found" });
     }
 
-    res.json(team);
+    res.json(tournament);
 });
 
 router.get("/", (req, res) => {
-    res.json(teams);
+    res.json(tournaments);
 });
 
 router.put("/:id", (req, res) => {
@@ -47,26 +47,26 @@ router.put("/:id", (req, res) => {
     }
 
     const id = Number(req.params.id);
-    const team = teams.find(t => t.id === id);
+    const tournament = tournaments.find(t => t.id === id);
 
-    if (!team) {
+    if (!tournament) {
         return res.status(404).json({ error: "Not found" });
     }
 
-    team.name = req.body.name;
-    res.json(team);
+    tournament.name = req.body.name;
+    res.json(tournament);
 });
 
 router.delete("/:id", (req, res) => {
 
     const id = Number(req.params.id);
-    const index = teams.findIndex(t => t.id === id);
+    const index = tournaments.findIndex(t => t.id === id);
 
     if (index === -1) {
         return res.status(404).json({ error: "Not found" });
     }
 
-    teams.splice(index, 1);
+    tournaments.splice(index, 1);
     res.json({ ok: true });
 });
 
