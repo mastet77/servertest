@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tournament System</title>
+</head>
+
+<body>
+
+    <h1>Submit Solution</h1>
+
+    <h2>Teams</h2>
+    <ul id="teams"></ul>
+
+    <h2>Tasks</h2>
+    <ul id="tasks"></ul>
+
+    <h2>Create Submission</h2>
+
+    <input id="teamId" placeholder="Team ID">
+    <input id="taskId" placeholder="Task ID">
+    <input id="githubLink" placeholder="GitHub link">
+    <button onclick="sendSubmission()">Send</button>
+
+    <h2>Result</h2>
+    <pre id="result"></pre>
+
+    <script>
+        const API = "http://localhost:3000/api";
+
+        // load teams
+        fetch(API + "/teams")
+            .then(res => res.json())
+            .then(data => {
+                const ul = document.getElementById("teams");
+                data.forEach(t => {
+                    const li = document.createElement("li");
+                    li.textContent = `ID: ${t.id} | ${t.name}`;
+                    ul.appendChild(li);
+                });
+            });
+
+        // load tasks
+        fetch(API + "/tasks")
+            .then(res => res.json())
+            .then(data => {
+                const ul = document.getElementById("tasks");
+                data.forEach(t => {
+                    const li = document.createElement("li");
+                    li.textContent = `ID: ${t.id} | ${t.title}`;
+                    ul.appendChild(li);
+                });
+            });
+
+        // send submission
+        function sendSubmission() {
+            const teamId = document.getElementById("teamId").value;
+            const taskId = document.getElementById("taskId").value;
+            const githubLink = document.getElementById("githubLink").value;
+
+            fetch(API + "/submissions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    teamId: Number(teamId),
+                    taskId: Number(taskId),
+                    githubLink
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById("result").textContent =
+                        JSON.stringify(data, null, 2);
+                });
+        }
+    </script>
+
+</body>
+
+</html>

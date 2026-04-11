@@ -10,7 +10,9 @@ const tournamentsRoutes = require("./routes/tournaments");
 const matchesRoutes = require("./routes/matches");
 const teamsRoutes = require("./routes/teams");
 const tasksRoutes = require("./routes/tasks");
+const submissionsRoutes = require("./routes/submissions");
 
+app.use("/api/submissions", submissionsRoutes);
 app.use("/api/tasks", tasksRoutes);
 app.use("/api/tournaments", tournamentsRoutes);
 app.use("/api/teams", teamsRoutes);
