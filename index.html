@@ -76,7 +76,27 @@
                         JSON.stringify(data, null, 2);
                 });
         }
+
+        function loadSubmissions() {
+            fetch(API + "/submissions")
+                .then(res => res.json())
+                .then(data => {
+                    const ul = document.getElementById("submissions");
+                    ul.innerHTML = "";
+
+                    data.forEach(s => {
+                        const li = document.createElement("li");
+                        li.textContent =
+                            `Team ${s.teamId} | Task ${s.taskId} | Score: ${s.score}`;
+                        ul.appendChild(li);
+                    });
+                });
+        }
     </script>
+
+    <h2>Submissions</h2>
+    <button onclick="loadSubmissions()">Load Submissions</button>
+    <ul id="submissions"></ul>
 
 </body>
 

@@ -14,7 +14,6 @@ const submissions = [
     }
 ];
 
-// CREATE
 router.post("/", (req, res) => {
 
     if (!req.body.teamId || !req.body.taskId || !req.body.githubLink) {
@@ -34,12 +33,10 @@ router.post("/", (req, res) => {
     res.json(submission);
 });
 
-// GET ALL
 router.get("/", (req, res) => {
     res.json(submissions);
 });
 
-// GET ONE
 router.get("/:id", (req, res) => {
 
     const id = Number(req.params.id);
@@ -52,7 +49,6 @@ router.get("/:id", (req, res) => {
     res.json(submission);
 });
 
-// UPDATE
 router.put("/:id", (req, res) => {
 
     const id = Number(req.params.id);
@@ -67,7 +63,6 @@ router.put("/:id", (req, res) => {
     res.json(submission);
 });
 
-// DELETE
 router.delete("/:id", (req, res) => {
 
     const id = Number(req.params.id);
