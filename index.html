@@ -29,7 +29,6 @@
     <script>
         const API = "http://localhost:3000/api";
 
-        // load teams
         fetch(API + "/teams")
             .then(res => res.json())
             .then(data => {
@@ -41,7 +40,6 @@
                 });
             });
 
-        // load tasks
         fetch(API + "/tasks")
             .then(res => res.json())
             .then(data => {
@@ -53,7 +51,6 @@
                 });
             });
 
-        // send submission
         function sendSubmission() {
             const teamId = document.getElementById("teamId").value;
             const taskId = document.getElementById("taskId").value;
@@ -92,12 +89,64 @@
                     });
                 });
         }
+
+        function loadLeaderboard() {
+            Promise.all([
+                fetch(API + "/submissions").then(res => res.json()),
+                fetch(API + "/teams").then(res => res.json())
+            ])
+                .then(([subs, teams]) => {
+
+                    const scores = {};
+
+                    subs.forEach(s => {
+                        if (!scores[s.teamId]) scores[s.teamId] = 0;
+                        scores[s.teamId] += s.score || 0;
+                    });
+
+                    const leaderboard = Object.keys(scores).map(teamId => {
+                        const team = teams.find(t => t.id == teamId);
+                        return {
+                            name: team ? team.name : "Unknown",
+                            score: scores[teamId]
+                        };
+                    });
+
+                    leaderboard.sort((a, b) => b.score - a.score);
+
+                    const tbody = document.querySelector("#leaderboardTable tbody");
+                    tbody.innerHTML = "";
+
+                    leaderboard.forEach((t, index) => {
+                        const tr = document.createElement("tr");
+
+                        tr.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${t.name}</td>
+                        <td>${t.score}</td>`;
+                        tbody.appendChild(tr);
+                    });
+                });
+        }
     </script>
 
     <h2>Submissions</h2>
     <button onclick="loadSubmissions()">Load Submissions</button>
     <ul id="submissions"></ul>
 
+    <h2>Leaderboard</h2>
+    <button onclick="loadLeaderboard()">Load Leaderboard</button>
+
+    <table border="1" id="leaderboardTable">
+        <thead>
+            <tr>
+                <th>Place</th>
+                <th>Team</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 </body>
 
 </html>
