@@ -83,8 +83,11 @@
 
                     data.forEach(s => {
                         const li = document.createElement("li");
-                        li.textContent =
-                            `Team ${s.teamId} | Task ${s.taskId} | Score: ${s.score}`;
+
+                        li.innerHTML = `
+                            Team ${s.teamId} | Task ${s.taskId} | Score: ${s.score}
+                            <button onclick="setScore(${s.id})">Set Score</button>`;
+
                         ul.appendChild(li);
                     });
                 });
@@ -128,6 +131,32 @@
                     });
                 });
         }
+
+        function setScore(id) {
+            const score = prompt("Enter score:");
+
+            fetch(API + "/submissions/" + id, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    score: Number(score)
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    alert("Score updated!");
+                    loadSubmissions();
+                    loadLeaderboard();
+                });
+
+
+
+        }
+
+        loadLeaderboard();
+        setInterval(loadLeaderboard, 3000);
     </script>
 
     <h2>Submissions</h2>
