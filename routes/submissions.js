@@ -50,17 +50,16 @@ router.get("/:id", (req, res) => {
 });
 
 router.put("/:id", (req, res) => {
-
     const id = Number(req.params.id);
-    const submission = submissions.find(s => s.id === id);
+    const sub = submissions.find(s => s.id === id);
 
-    if (!submission) {
+    if (!sub) {
         return res.status(404).json({ error: "Not found" });
     }
 
-    submission.score = req.body.score;
+    sub.score = req.body.score;
 
-    res.json(submission);
+    res.json(sub);
 });
 
 router.delete("/:id", (req, res) => {

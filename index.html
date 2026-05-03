@@ -124,14 +124,13 @@
                         const tr = document.createElement("tr");
 
                         tr.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${t.name}</td>
-                        <td>${t.score}</td>`;
+            <td>${index + 1}</td>
+            <td>${t.name}</td>
+            <td>${t.score}</td>`;
                         tbody.appendChild(tr);
                     });
                 });
-        }
-
+        } // ← ВОТ ЭТОГО НЕ ХВАТАЛО
         function setScore(id) {
             const score = prompt("Enter score:");
 
