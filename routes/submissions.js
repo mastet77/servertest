@@ -1,78 +1,125 @@
-// API
 const express = require("express");
 const router = express.Router();
+const db = require("../db");
 
-// временная БД
-const submissions = [
-    {
-        id: 1,
-        teamId: 1,
-        taskId: 1,
-        githubLink: "https://github.com/example",
-        videoLink: "https://youtube.com/example",
-        score: 0
-    }
-];
-
-router.post("/", (req, res) => {
-
-    if (!req.body.teamId || !req.body.taskId || !req.body.githubLink) {
-        return res.status(400).json({ error: "teamId, taskId, githubLink required" });
-    }
-
-    const submission = {
-        id: Date.now(),
-        teamId: req.body.teamId,
-        taskId: req.body.taskId,
-        githubLink: req.body.githubLink,
-        videoLink: req.body.videoLink,
-        score: 0
-    };
-
-    submissions.push(submission);
-    res.json(submission);
-});
-
+// GET all
 router.get("/", (req, res) => {
-    res.json(submissions);
+
+    db.all("SELECT * FROM submissions", [], (err, rows) => {
+
+        if (err) {
+            return res.status(500).json({
+                error: err.message
+            });
+        }
+
+        res.json(rows);
+    });
 });
 
+// GET one
 router.get("/:id", (req, res) => {
 
-    const id = Number(req.params.id);
-    const submission = submissions.find(s => s.id === id);
+    db.get(
+        "SELECT * FROM submissions WHERE id = ?",
+        [req.params.id],
+        (err, row) => {
 
-    if (!submission) {
-        return res.status(404).json({ error: "Not found" });
-    }
+            if (err) {
+                return res.status(500).json({
+                    error: err.message
+                });
+            }
 
-    res.json(submission);
+            if (!row) {
+                return res.status(404).json({
+                    error: "Not found"
+                });
+            }
+
+            res.json(row);
+        }
+    );
 });
 
+// POST
+router.post("/", (req, res) => {
+
+    const { teamId, taskId, githubLink } = req.body;
+
+    if (!teamId || !taskId || !githubLink) {
+        return res.status(400).json({
+            error: "teamId, taskId, githubLink required"
+        });
+    }
+
+    db.run(
+        `INSERT INTO submissions
+        (teamId, taskId, githubLink, score)
+        VALUES (?, ?, ?, ?)`,
+        [teamId, taskId, githubLink, 0],
+
+        function (err) {
+
+            if (err) {
+                return res.status(500).json({
+                    error: err.message
+                });
+            }
+
+            res.json({
+                id: this.lastID,
+                teamId,
+                taskId,
+                githubLink,
+                score: 0
+            });
+        }
+    );
+});
+
+// UPDATE SCORE
 router.put("/:id", (req, res) => {
-    const id = Number(req.params.id);
-    const sub = submissions.find(s => s.id === id);
 
-    if (!sub) {
-        return res.status(404).json({ error: "Not found" });
-    }
+    db.run(
+        "UPDATE submissions SET score = ? WHERE id = ?",
+        [req.body.score, req.params.id],
 
-    sub.score = req.body.score;
+        function (err) {
 
-    res.json(sub);
+            if (err) {
+                return res.status(500).json({
+                    error: err.message
+                });
+            }
+
+            res.json({
+                ok: true
+            });
+        }
+    );
 });
 
+// DELETE
 router.delete("/:id", (req, res) => {
 
-    const id = Number(req.params.id);
-    const index = submissions.findIndex(s => s.id === id);
+    db.run(
+        "DELETE FROM submissions WHERE id = ?",
+        [req.params.id],
 
-    if (index === -1) {
-        return res.status(404).json({ error: "Not found" });
-    }
+        function (err) {
 
-    submissions.splice(index, 1);
-    res.json({ ok: true });
+            if (err) {
+                return res.status(500).json({
+                    error: err.message
+                });
+            }
+
+            res.json({
+                ok: true
+            });
+        }
+    );
 });
 
 module.exports = router;

@@ -1,76 +1,40 @@
-// API
 const express = require("express");
 const router = express.Router();
+const db = require("../db");
 
-// временная БД
-const tasks = [
-    {
-        id: 1,
-        title: "First Task",
-        description: "Solve the problem",
-        tournamentId: 1
-    }
-];
+// GET
+router.get("/", (req, res) => {
+    db.all("SELECT * FROM tasks", [], (err, rows) => {
+        res.json(rows);
+    });
+});
 
+// POST
 router.post("/", (req, res) => {
 
-    if (!req.body.title || !req.body.tournamentId) {
-        return res.status(400).json({ error: "title and tournamentId required" });
+    if (!req.body.title) {
+        return res.status(400).json({
+            error: "title required"
+        });
     }
 
-    const task = {
-        id: Date.now(),
-        title: req.body.title,
-        description: req.body.description,
-        tournamentId: req.body.tournamentId
-    };
+    db.run(
+        "INSERT INTO tasks(title) VALUES(?)",
+        [req.body.title],
+        function (err) {
 
-    tasks.push(task);
-    res.json(task);
-});
+            if (err) {
+                return res.status(500).json({
+                    error: err.message
+                });
+            }
 
-router.get("/", (req, res) => {
-    res.json(tasks);
-});
-
-router.get("/:id", (req, res) => {
-
-    const id = Number(req.params.id);
-    const task = tasks.find(t => t.id === id);
-
-    if (!task) {
-        return res.status(404).json({ error: "Not found" });
-    }
-
-    res.json(task);
-});
-
-router.put("/:id", (req, res) => {
-
-    const id = Number(req.params.id);
-    const task = tasks.find(t => t.id === id);
-
-    if (!task) {
-        return res.status(404).json({ error: "Not found" });
-    }
-
-    task.title = req.body.title;
-    task.description = req.body.description;
-
-    res.json(task);
-});
-
-router.delete("/:id", (req, res) => {
-
-    const id = Number(req.params.id);
-    const index = tasks.findIndex(t => t.id === id);
-
-    if (index === -1) {
-        return res.status(404).json({ error: "Not found" });
-    }
-
-    tasks.splice(index, 1);
-    res.json({ ok: true });
+            res.json({
+                id: this.lastID,
+                title: req.body.title
+            });
+        }
+    );
 });
 
 module.exports = router;
